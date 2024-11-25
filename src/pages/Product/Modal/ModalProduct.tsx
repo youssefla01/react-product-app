@@ -1,7 +1,7 @@
-
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Checkbox, FormControlLabel, Box } from "@mui/material";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
+import { Rating } from '@mui/material';  // Importation du composant Rating
 import useProductRequests from "../../../api/useProductRequests";
 
 interface ProductModalProps {
@@ -30,7 +30,6 @@ const ProductModal = ({ isOpen, onClose, editingProduct, setProducts, products }
       if (editingProduct) {
         savedProduct = await updateProduct({ ...values, _id: editingProduct._id });
       } else {
-        console.log(values);
         savedProduct = await createProduct(values);
         setProducts([...products, savedProduct]);
       }
@@ -55,14 +54,14 @@ const ProductModal = ({ isOpen, onClose, editingProduct, setProducts, products }
             name: editingProduct ? editingProduct.name : "",
             price: editingProduct ? editingProduct.price : "",
             type: editingProduct ? editingProduct.type : "",
-            rating: editingProduct ? editingProduct.rating : "",
+            rating: editingProduct ? editingProduct.rating : 0,  // Initialisation du rating à 0 si vide
             warranty_years: editingProduct ? editingProduct.warranty_years : "",
-            available: editingProduct ? editingProduct.available : true, // Assurez-vous que "available" a une valeur initiale
+            available: editingProduct ? editingProduct.available : true,
           }}
           validationSchema={validationSchema}
           onSubmit={handleSave}
         >
-          {({ values, handleChange, handleBlur, errors, touched }) => (
+          {({ values, handleChange, handleBlur, errors, touched, setFieldValue }) => (
             <Form>
               <Field
                 name="name"
@@ -101,19 +100,15 @@ const ProductModal = ({ isOpen, onClose, editingProduct, setProducts, products }
                 error={touched.type && Boolean(errors.type)}
                 helperText={touched.type && errors.type}
               />
-              <Field
-                name="rating"
-                as={TextField}
-                label="Évaluation"
-                type="number"
-                fullWidth
-                margin="dense"
-                value={values.rating}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.rating && Boolean(errors.rating)}
-                helperText={touched.rating && errors.rating}
-              />
+              <Box>
+                <label>Évaluation</label>
+                <Rating
+                  name="rating"
+                  value={values.rating}
+                  onChange={(_, value) => setFieldValue("rating", value || 0)}  // Met à jour le rating dans Formik
+                  precision={0.5}
+                />
+              </Box>
               <Field
                 name="warranty_years"
                 as={TextField}
@@ -127,7 +122,6 @@ const ProductModal = ({ isOpen, onClose, editingProduct, setProducts, products }
                 error={touched.warranty_years && Boolean(errors.warranty_years)}
                 helperText={touched.warranty_years && errors.warranty_years}
               />
-              {/* Ajout du champ "available" */}
               <Field
                 name="available"
                 type="checkbox"
