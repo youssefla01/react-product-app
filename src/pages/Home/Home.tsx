@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import "./Home.css"; // Importer le fichier CSS modernisé
+import "./Home.css";
 
 const Home: React.FC = () => {
   const { email } = useSelector((state: any) => state.auth);

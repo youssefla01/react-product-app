@@ -12,19 +12,18 @@ import { useNotification } from "../components/NotificationProvider";
 const useApiRequests = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { token, email } = useSelector((state: RootState) => state.auth); // On récupère aussi l'email du state
+  const { token, email } = useSelector((state: RootState) => state.auth); 
   const { showNotification } = useNotification();
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // Ajout d'un interceptor Axios pour injecter le token et l'email dans les headers de chaque requête
   axios.interceptors.request.use(
     (config) => {
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
       }
       if (email) {
-        config.headers["X-User-Email"] = email; // On ajoute l'email dans les headers si nécessaire
+        config.headers["X-User-Email"] = email;
       }
       return config;
     },
@@ -37,7 +36,7 @@ const useApiRequests = () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/login`, user);
       const { token, email } = response.data;
-      dispatch(loginSuccess({ token, email })); // Assurez-vous que `email` est dans `userData`
+      dispatch(loginSuccess({ token, email })); 
       navigate("/home");
       showNotification("Connexion réussie !", "success");
     } catch (error) {
@@ -53,7 +52,7 @@ const useApiRequests = () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/register`, user);
       const { token, email } = response.data;
-      dispatch(registerSuccess({ token, email })); // Assurez-vous que `email` est dans `userData`
+      dispatch(registerSuccess({ token, email })); 
       navigate("/home");
       showNotification("Inscription réussie !", "success");
     } catch (error) {
